@@ -36,7 +36,8 @@ public class TerminalVendas {
     JTable tabela;
     //Vai popular JTable.
     Object[][] dados = new Object[30][3];
-    String[] colunas = {"Nome", "Código", "Preco"};
+    String[] colunas = {"Código", "Nome", "Preço"};
+    ArrayList<Cardapio> cardapio, boleta;
 
     public void loadCardapio() {
         int i = 0;
@@ -46,8 +47,8 @@ public class TerminalVendas {
         ArrayList<Cardapio> result = cardapioDao.buscarTodos();
 
         for (Cardapio r : result) {
-            dados[i][0] = r.getCodigo();
-            dados[i][1] = r.getNome();
+            dados[i][0] = r.getNome();
+            dados[i][1] = r.getCodigo();
             dados[i][2] = r.getPreco_venda();
             i = i + 1;
         }
@@ -59,7 +60,7 @@ public class TerminalVendas {
         loadCardapio();
 
         tabela = new JTable(dados, colunas);
-        tabela.setPreferredScrollableViewportSize(new Dimension(400, 800));
+        tabela.setPreferredScrollableViewportSize(new Dimension(200, 800));
         barraRolagem = new JScrollPane(tabela);
 
         jframeterminal = new JFrame("Terminal de Vendas");
@@ -113,12 +114,32 @@ public class TerminalVendas {
     }
 
     public void operations() {
-
+        String codigo = "-1";
+        int qtd = -1;
+        boleta = new ArrayList<>();
         textfield = jtextInput.getText();
 
         if (textfield.indexOf('*') != -1) {
-            JOptionPane.showMessageDialog(null, "JtextField preechindo " + textfield);
+            codigo = textfield.substring(0, textfield.indexOf('*'));
+            qtd = Integer.parseInt(textfield.substring(textfield.indexOf('*') + 1, textfield.length()));
+
+            for (int i = 0; i < cardapio.size(); i++) {
+                if (cardapio.get(i).getCodigo().equals(codigo)) {
+                    boleta.add(cardapio.get(i));
+                    jtextInput.setText("");
+                }
+            }
+            for (int i = 0; i < boleta.size(); i++) {
+                jtextaeraBoleta.setText(boleta.get(i).getCodigo() + " - " + boleta.get(i).getNome());
+                //System.out.println(boleta.get(i).getNome());
+
+            }
+            JOptionPane.showMessageDialog(null, "Codigo: " + codigo + " Qtd " + qtd);
+
+        } else {
+            JOptionPane.showMessageDialog(null, "<h1>Não é multiplicador</h1>");
         }
+
     }
 
     public static void main(String args[]) {
